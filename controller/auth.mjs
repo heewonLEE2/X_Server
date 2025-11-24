@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 const secretkey = "abcdefg1234!@#$";
 const bcryptSaltRounts = 10;
+
 const jwtExpiresInDays = "2d";
 
 // JWT 토큰 생성 함수
@@ -30,7 +31,7 @@ export async function signup(req, res, next) {
   // 토큰 생성
   const token = await createJwtToken(user.id);
   // console.log(token);
-  res.status(201).json({ user: user, token: token });
+  res.status(201).json({ user, token });
 }
 
 // 로그인 함수
@@ -52,8 +53,8 @@ export async function login(req, res, next) {
   }
 
   // 토큰 생성
-  const totken = await createJwtToken(user.id);
-  res.status(200).json({ user, totken });
+  const token = await createJwtToken(user.id);
+  res.status(200).json({ user, token });
 }
 
 // 로그인 유지 함수
