@@ -1,15 +1,13 @@
 import * as authRepository from "../data/auth.mjs";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-const secretkey = "abcdefg1234!@#$";
-const bcryptSaltRounts = 10;
-
-const jwtExpiresInDays = "2d";
+import { config } from "../config.mjs";
 
 // JWT 토큰 생성 함수
 async function createJwtToken(id) {
-  return jwt.sign({ id }, secretkey, { expiresIn: jwtExpiresInDays });
+  return jwt.sign({ id }, config.jwt.secretKey, {
+    expiresIn: config.jwt.expiresInSec,
+  });
 }
 
 // 회원 가입 함수
@@ -24,7 +22,7 @@ export async function signup(req, res, next) {
   }
 
   // 비밀번호 해싱
-  const hashed = bcrypt.hashSync(password, bcryptSaltRounts);
+  const hashed = bcrypt.hashSync(password, config.bcrypt.saltRounds);
 
   const user = await authRepository.signup(userid, hashed, name, email);
 
