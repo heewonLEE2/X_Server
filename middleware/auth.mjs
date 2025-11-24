@@ -7,7 +7,7 @@ const AUTH_ERROR = { message: "인증 에러" };
 // 인증 미들웨어
 export const isAuth = async (req, res, next) => {
   const authHeader = req.get("Authorization");
-  console.log(authHeader);
+  console.log("authHeader =====> ", authHeader);
 
   if (!(authHeader && authHeader.startsWith("Bearer "))) {
     console.log("헤더 에러");
@@ -24,15 +24,15 @@ export const isAuth = async (req, res, next) => {
       console.log("토큰 에러");
       return res.status(401).json(AUTH_ERROR);
     }
-    console.log(decoded);
-    const user = await authRepository.findById(decoded.id);
+    console.log("decoded =====> ", decoded);
+    const user = await authRepository.findById(decoded.idx);
     if (!user) {
       console.log("아이디 없음");
       return res.status(401).json(AUTH_ERROR);
     }
-    console.log("user.id: ", user.id);
+    console.log("user.idx: ", user.idx);
     console.log("user.userid: ", user.userid);
-    req.userid = user.userid;
+    req.idx = user.idx;
     next();
   });
 };
