@@ -1,29 +1,33 @@
 import MongoDB from "mongodb";
-import { getUsers } from "../db/database.mjs";
+import { useVirtualId } from "../db/database.mjs";
+import mongoose from "mongoose";
 
-const ObjectID = MongoDB.ObjectId;
+// versionKey: Mongoose가 문서를 저장할 때 자동으로 추가하는 __v 필드를 설정
+const userSchema = new mongoose.Schema(
+  {
+    userid: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    url: String,
+  },
+  { versionKey: false }
+);
+
+useVirtualId(userSchema);
+const User = mongoose.model("User", userSchema);
 
 // 회원가입
 export async function signup(user) {
-  return getUsers()
-    .insertOne(user)
-    .then((result) => result.insertedId.toString());
+  return new User(user).save().then((data) => data.id);
 }
 
 // 회원 체크
 export async function findByUserid(userid) {
-  return getUsers().find({ userid }).next().then(mapOptionalUser);
+  return User.findOne({ userid });
 }
 
 // ID로 회원 찾기
 export async function findById(id) {
-  return getUsers()
-    .find({ _id: new ObjectID(id) })
-    .next()
-    .then(mapOptionalUser);
-}
-
-// Optional<User>를 User | null로 매핑하는 함수
-function mapOptionalUser(user) {
-  return user ? { ...user, id: user._id.toString() } : user;
+  return User.findById(id);
 }
